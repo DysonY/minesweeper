@@ -70,9 +70,19 @@ let initialModel mines rows cols =
   done
   ; board
 
+let printAdjacent model =
+  for row = 0 to Array.length model - 1 do
+    for col = 0 to Array.length model.(0) - 1 do
+      Lib.pfmt "%d " model.(row).(col).adjacent
+    done ;
+    print_string "\n"
+  done ;
+  print_string "\n"
+
 (* revealTile : model -> int -> int -> model *)
 (* Flood fill on click *)
 let revealTile model x y =
+  printAdjacent model;
   let row = x / 50 in
   let col = y / 50 in
   let numRows = Array.length model in
@@ -84,9 +94,21 @@ let revealTile model x y =
     match model.(row).(col).adjacent with
     | 0 ->
       if row > 0 && not (List.mem (row - 1, col) !checkedTiles) then
-        floodFill model (row - 1) col;
+        begin
+          floodFill model (row - 1) col;
+          if col > 0 && not (List.mem (row - 1, col - 1) !checkedTiles) then
+            floodFill model (row - 1) (col - 1);
+          if col < numCols - 1 && not (List.mem (row - 1, col + 1) !checkedTiles) then
+            floodFill model (row - 1) (col + 1)
+        end;
       if row < numRows - 1 && not (List.mem (row + 1, col) !checkedTiles) then
-        floodFill model (row + 1) col;
+        begin
+          floodFill model (row + 1) col;
+          if col > 0 && not (List.mem (row + 1, col - 1) !checkedTiles) then
+            floodFill model (row + 1) (col - 1);
+          if col < numCols - 1 && not (List.mem (row + 1, col + 1) !checkedTiles) then
+            floodFill model (row + 1) (col + 1)
+        end;
       if col > 0 && not (List.mem (row, col - 1) !checkedTiles) then
         floodFill model row (col - 1);
       if col < numCols - 1 && not (List.mem (row, col + 1) !checkedTiles) then
@@ -119,7 +141,7 @@ let printMouseCoords x y =
 let textOf numAdjacent =
   match numAdjacent with
   | 1 -> Image.text "1" Color.blue
-  | 2 -> Image.text "2" Color.green
+  | 2 -> Image.text "2" Color.darkGreen
   | 3 -> Image.text "3" Color.red
   | 4 -> Image.text "4" Color.violet
   | 5 -> Image.text "5" Color.maroon
@@ -160,7 +182,6 @@ let validateInput mines rows cols =
 
 (* handleMouse : model -> int -> int -> string -> model *)
 let handleMouse model x y event =
-  printMouseCoords x y;
   match event = "button_up" with
   | true -> revealTile model (int_of_float x) (int_of_float y)
   | false -> model
