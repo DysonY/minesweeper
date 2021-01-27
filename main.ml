@@ -70,19 +70,9 @@ let initialModel mines rows cols =
   done
   ; board
 
-let printAdjacent model =
-  for row = 0 to Array.length model - 1 do
-    for col = 0 to Array.length model.(0) - 1 do
-      Lib.pfmt "%d " model.(row).(col).adjacent
-    done ;
-    print_string "\n"
-  done ;
-  print_string "\n"
-
 (* revealTile : model -> int -> int -> model *)
 (* Flood fill on click *)
 let revealTile model x y =
-  printAdjacent model;
   let row = x / 50 in
   let col = y / 50 in
   let numRows = Array.length model in
