@@ -18,7 +18,7 @@ let printAdjacent model =
   done ;
   print_string "\n"
 
-(* printAdjacent : model -> unit *)
+(* printRevealed : model -> unit *)
 let printRevealed model =
   for row = 0 to Array.length model - 1 do
     for col = 0 to Array.length model.(0) - 1 do
